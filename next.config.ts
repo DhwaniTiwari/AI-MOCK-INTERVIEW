@@ -7,7 +7,14 @@ const nextConfig: NextConfig = {
 
     typescript: {
       ignoreBuildErrors: true,
-    }
+    },
+
+    images: {
+      domains: [],
+      unoptimized: true,
+    },
+
+    output: 'standalone'
 };
 
 export default nextConfig;
