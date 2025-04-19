@@ -2,6 +2,8 @@ import {ReactNode} from 'react'
 import {redirect} from "next/navigation";
 import {isAuthenticated} from "@/lib/actions/authaction";
 
+export const dynamic = 'force-dynamic';
+
 const AuthLayout = async ({children}: {children: ReactNode}) => {
     try {
         const isUserAuthenticated = await isAuthenticated();
