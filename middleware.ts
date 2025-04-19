@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
 
     // If trying to access auth pages
-    if (pathname.startsWith('/auth')) {
+    if (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) {
         // If session exists, redirect to home
         if (session) {
             return NextResponse.redirect(new URL('/', request.url));
@@ -30,8 +30,8 @@ export async function middleware(request: NextRequest) {
 
     // For all other routes
     if (!session) {
-        // If no session, redirect to login
-        const url = new URL('/auth/login', request.url);
+        // If no session, redirect to sign-in
+        const url = new URL('/sign-in', request.url);
         url.searchParams.set('redirect', pathname);
         return NextResponse.redirect(url);
     }
