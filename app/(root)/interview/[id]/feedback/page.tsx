@@ -6,6 +6,7 @@ import dayjs from 'dayjs'
 import {getCurrentUser} from "@/lib/actions/authaction";
 import {getFeedbackByInterviewId, getInterviewById} from "@/lib/actions/general.action";
 import {redirect} from "next/navigation";
+import {RouteParams, Feedback} from "@/types";
 
 const Page = async ({ params }: RouteParams) => {
     const { id } = await params;
@@ -63,7 +64,7 @@ const Page = async ({ params }: RouteParams) => {
             {/* Interview Breakdown */}
             <div className="flex flex-col gap-4">
                 <h2>Breakdown of the Interview:</h2>
-                {feedback?.categoryScores?.map((category, index) => (
+                {feedback?.categoryScores?.map((category: { name: string; score: number; comment: string }, index: number) => (
                     <div key={index}>
                         <p className="font-bold">
                             {index + 1}. {category.name} ({category.score}/100)
@@ -76,7 +77,7 @@ const Page = async ({ params }: RouteParams) => {
             <div className="flex flex-col gap-3">
                 <h3>Strengths</h3>
                 <ul>
-                    {feedback?.strengths?.map((strength, index) => (
+                    {feedback?.strengths?.map((strength: string, index: number) => (
                         <li key={index}>{strength}</li>
                     ))}
                 </ul>
@@ -85,7 +86,7 @@ const Page = async ({ params }: RouteParams) => {
             <div className="flex flex-col gap-3">
                 <h3>Areas for Improvement</h3>
                 <ul>
-                    {feedback?.areasForImprovement?.map((area, index) => (
+                    {feedback?.areasForImprovement?.map((area: string, index: number) => (
                         <li key={index}>{area}</li>
                     ))}
                 </ul>

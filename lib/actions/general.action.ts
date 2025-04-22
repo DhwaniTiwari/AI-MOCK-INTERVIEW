@@ -2,6 +2,7 @@ import {db} from "@/firebase/admin";
 import {generateObject} from "ai";
 import {google} from "@ai-sdk/google";
 import {feedbackSchema} from "@/constants";
+import {Interview, Feedback, GetLatestInterviewsParams, CreateFeedbackParams} from "@/types";
 
 export async function getInterviewsByUserId(userId: string): Promise<Interview[] |  null>{
     const interviews = await db
