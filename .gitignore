@@ -3,12 +3,7 @@
 # dependencies
 /node_modules
 /.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+.pnp.js
 
 # testing
 /coverage
@@ -28,14 +23,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# local env files
+.env*.local
+.env
 
 # vercel
 .vercel
@@ -44,14 +35,25 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# IDE
-.idea/
-.vscode/
-
 # Firebase
 *-firebase-adminsdk-*.json
 firebase-debug.log
 firebase-debug.*.log
 
-# Local development
-*.local
+# Sensitive files
+secrets.json
+credentials.json
+*.key
+*.pem
+*.cert
+*.crt
+
+# Service account credentials
+*-firebase-adminsdk-*.json
+mockmuse-5e635-firebase-adminsdk-fbsvc-fd261c724b.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

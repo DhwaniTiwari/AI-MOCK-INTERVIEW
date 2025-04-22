@@ -36,10 +36,11 @@ export async function POST(request: Request){
             finalized: true,
             coverImage: getRandomInterviewCover(),
             createdAT: new Date().toISOString()
-        }
+        };
+
         await db.collection("interviews").add(interview);
 
-        return Response.json({success: true}, {status:200})
+        return Response.json({success: true}, {status:200});
     }catch (error){
         console.error(error);
 

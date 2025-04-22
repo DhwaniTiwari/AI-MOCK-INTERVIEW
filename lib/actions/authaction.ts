@@ -201,37 +201,6 @@ export async function isAuthenticated() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // 'use server';
 //
 // import {auth, db} from "@/firebase/admin";
