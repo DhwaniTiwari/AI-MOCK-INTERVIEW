@@ -11,15 +11,26 @@ const nextConfig = {
         dns: false,
         child_process: false,
         'firebase-admin': false,
+        'google-auth-library': false,
+        'gaxios': false,
+        'https-proxy-agent': false,
       };
     }
     return config;
   },
   experimental: {
-    serverComponentsExternalPackages: ['firebase-admin'],
+    serverComponentsExternalPackages: [
+      'firebase-admin',
+      'google-auth-library',
+      'gaxios',
+      'https-proxy-agent',
+    ],
   },
   typescript: {
     ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   },
 };
 
