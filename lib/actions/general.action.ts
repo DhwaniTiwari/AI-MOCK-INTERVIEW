@@ -2,20 +2,39 @@ import {db} from "@/firebase/admin";
 import {generateObject} from "ai";
 import {google} from "@ai-sdk/google";
 import { feedbackSchema } from "@/constants/index";
-import {Interview, Feedback, GetLatestInterviewsParams, CreateFeedbackParams} from "@/types";
+import {Interview, Feedback, GetLatestInterviewsParams, CreateFeedbackParams, GetFeedbackByInterviewIdParams} from "@/types";
 
 export async function getInterviewsByUserId(userId: string): Promise<Interview[] |  null>{
-    const interviews = await db
-        .collection('interviews')
-        .where('userId', '==', userId)
-        .orderBy('createdAt', 'desc')
-        .get();
+    console.log('Fetching interviews for user:', userId);
+    try {
+        const interviews = await db
+            .collection('interviews')
+            .where('userId', '==', userId)
+            .orderBy('createdAt', 'desc')
+            .get();
 
+        console.log('Found interviews:', interviews.docs.length);
+        
+        if (interviews.empty) {
+            console.log('No interviews found for user');
+            return [];
+        }
 
-    return interviews.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-    })) as Interview[];
+        const result = interviews.docs.map((doc) => {
+            const data = doc.data();
+            console.log('Interview data:', { id: doc.id, ...data });
+            return {
+                id: doc.id,
+                ...data
+            } as Interview;
+        });
+        
+        console.log('Mapped interviews:', result);
+        return result;
+    } catch (error) {
+        console.error('Error fetching interviews:', error);
+        return null;
+    }
 }
 
 export async function getLatestInterviews( params : GetLatestInterviewsParams): Promise<Interview[] |  null>{
@@ -47,12 +66,12 @@ export async function getInterviewById(id: string): Promise<Interview |  null>{
 }
 
 export async function createFeedback(params: CreateFeedbackParams){
-    const { interviewId, userId, transcript } = params;
+    const { interviewId, userId, messages } = params;
 
     try {
-        const formattedTranscript = transcript
-            .map((sentence : { role: string; content: string}) => (
-                `- ${sentence.role}: ${sentence.content}\n`
+        const formattedTranscript = messages
+            .map((message) => (
+                `- ${message.role}: ${message.content}\n`
             )).join('');
 
         const { object: { totalScore, categoryScores, strengths, areasForImprovement, finalAssessment} } = await generateObject({
@@ -76,26 +95,25 @@ export async function createFeedback(params: CreateFeedbackParams){
                 "You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories",
         });
 
-        const feedback = await db.collection('Feedback').add({
+        const feedback = await db.collection('feedback').add({
             interviewId,
             userId,
+            messages,
             totalScore,
             categoryScores,
             strengths,
             areasForImprovement,
             finalAssessment,
             createdAt: new Date().toISOString()
-        })
+        });
 
         return {
             success: true,
             feedbackId: feedback.id
-        }
-
-    }catch (e){
+        };
+    } catch (e) {
         console.error('Error saving feedback', e);
-
-        return { success: false}
+        return { success: false };
     }
 }
 

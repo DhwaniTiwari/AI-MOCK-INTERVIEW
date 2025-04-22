@@ -9,8 +9,28 @@ export async function GET(){
 
 export async function POST(request: Request){
     console.log('Received interview generation request');
+    console.log('Environment variables check:');
+    console.log('GOOGLE_GENERATIVE_AI_API_KEY present:', !!process.env.GOOGLE_GENERATIVE_AI_API_KEY);
+    
     const { type, role, level, techstack, amount, userid } = await request.json();
     console.log('Request data:', { type, role, level, techstack, amount, userid });
+
+    // Validate required fields
+    if (!userid) {
+        console.error('Missing userid in request');
+        return Response.json({ 
+            success: false, 
+            error: 'User ID is required' 
+        }, { status: 400 });
+    }
+
+    if (!type || !role || !level || !techstack || !amount) {
+        console.error('Missing required fields:', { type, role, level, techstack, amount });
+        return Response.json({ 
+            success: false, 
+            error: 'All fields are required' 
+        }, { status: 400 });
+    }
 
     try {
         console.log('Generating questions with AI...');
@@ -32,10 +52,28 @@ export async function POST(request: Request){
         });
         console.log('Generated questions:', questions);
 
+        // Validate questions format
+        let parsedQuestions;
+        try {
+            parsedQuestions = JSON.parse(questions);
+            if (!Array.isArray(parsedQuestions)) {
+                throw new Error('Questions must be an array');
+            }
+        } catch (parseError) {
+            console.error('Error parsing questions:', parseError);
+            return Response.json({ 
+                success: false, 
+                error: 'Failed to parse generated questions',
+                details: parseError
+            }, { status: 500 });
+        }
+
         const interview = {
-            role, type, level,
-            techstack: techstack.split(',') ,
-            questions: JSON.parse(questions),
+            role, 
+            type, 
+            level,
+            techstack: techstack.split(','),
+            questions: parsedQuestions,
             userId: userid,
             finalized: true,
             coverImage: getRandomInterviewCover(),
@@ -49,7 +87,8 @@ export async function POST(request: Request){
 
         return Response.json({
             success: true,
-            interviewId: interviewRef.id
+            interviewId: interviewRef.id,
+            data: interview
         }, {status:200});
     }catch (error){
         console.error('Error generating interview:', error);

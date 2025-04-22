@@ -9,21 +9,29 @@ const SESSION_DURATION = 60 * 60 * 24 * 7;
 
 // Set session cookie
 export async function setSessionCookie(idToken: string) {
+    console.log('Setting session cookie...');
     const cookieStore = await cookies();
 
-    // Create session cookie
-    const sessionCookie = await auth.createSessionCookie(idToken, {
-        expiresIn: SESSION_DURATION * 1000, // milliseconds
-    });
+    try {
+        // Create session cookie
+        const sessionCookie = await auth.createSessionCookie(idToken, {
+            expiresIn: SESSION_DURATION * 1000, // milliseconds
+        });
+        console.log('Session cookie created successfully');
 
-    // Set cookie in the browser
-    cookieStore.set("session", sessionCookie, {
-        maxAge: SESSION_DURATION,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-        sameSite: "lax",
-    });
+        // Set cookie in the browser
+        cookieStore.set("session", sessionCookie, {
+            maxAge: SESSION_DURATION,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            path: "/",
+            sameSite: "lax",
+        });
+        console.log('Session cookie set in browser');
+    } catch (error) {
+        console.error('Error setting session cookie:', error);
+        throw error;
+    }
 }
 
 export async function signUp(params: SignUpParams) {
@@ -99,29 +107,38 @@ export async function signOut() {
 
 // Get current user from session cookie
 export async function getCurrentUser(): Promise<User | null> {
+    console.log('Getting current user...');
     const cookieStore = await cookies();
 
     const sessionCookie = cookieStore.get("session")?.value;
-    if (!sessionCookie) return null;
+    if (!sessionCookie) {
+        console.log('No session cookie found');
+        return null;
+    }
 
     try {
+        console.log('Verifying session cookie...');
         const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
+        console.log('Session cookie verified, user ID:', decodedClaims.uid);
 
         // get user info from db
         const userRecord = await db
             .collection("users")
             .doc(decodedClaims.uid)
             .get();
-        if (!userRecord.exists) return null;
+        
+        if (!userRecord.exists) {
+            console.log('User record not found in database');
+            return null;
+        }
 
+        console.log('User found in database');
         return {
             ...userRecord.data(),
             id: userRecord.id,
         } as User;
     } catch (error) {
-        console.log(error);
-
-        // Invalid or expired session
+        console.error('Error getting current user:', error);
         return null;
     }
 }
