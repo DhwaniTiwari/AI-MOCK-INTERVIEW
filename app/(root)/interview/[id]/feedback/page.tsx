@@ -3,14 +3,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import dayjs from 'dayjs'
-import {getCurrentUser} from "@/lib/actions/authaction";
+import { auth } from "@/lib/actions/authaction";
 import {getFeedbackByInterviewId, getInterviewById} from "@/lib/actions/general.action";
 import {redirect} from "next/navigation";
 import {RouteParams, Feedback} from "@/types";
 
 const Page = async ({ params }: RouteParams) => {
     const { id } = await params;
-    const user = await getCurrentUser();
+    const user = await auth();
 
     const interview = await getInterviewById(id);
     if (!interview) redirect('/');
