@@ -18,14 +18,12 @@ const nextConfig = {
     }
     return config;
   },
-  experimental: {
-    serverComponentsExternalPackages: [
-      'firebase-admin',
-      'google-auth-library',
-      'gaxios',
-      'https-proxy-agent',
-    ],
-  },
+  serverExternalPackages: [
+    'firebase-admin',
+    'google-auth-library',
+    'gaxios',
+    'https-proxy-agent',
+  ],
   typescript: {
     ignoreBuildErrors: true,
   },

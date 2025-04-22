@@ -4,20 +4,24 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import dayjs from 'dayjs'
 import { getCurrentUser } from "@/lib/actions/authaction";
-import {getFeedbackByInterviewId, getInterviewById} from "@/lib/actions/general.action";
-import {redirect} from "next/navigation";
-import {RouteParams, Feedback} from "@/types";
+import { getFeedbackByInterviewId, getInterviewById } from "@/lib/actions/general.action";
+import { redirect } from "next/navigation";
+import { RouteParams } from "@/types";
 
 const Page = async ({ params }: RouteParams) => {
     const { id } = await params;
     const user = await getCurrentUser();
+
+    if (!user?.id) {
+        redirect('/');
+    }
 
     const interview = await getInterviewById(id);
     if (!interview) redirect('/');
 
     const feedback = await getFeedbackByInterviewId({
         interviewId: id,
-        userId: user?.id!,
+        userId: user.id,
     });
 
     console.log(feedback);
