@@ -8,9 +8,12 @@ export async function GET(){
 }
 
 export async function POST(request: Request){
+    console.log('Received interview generation request');
     const { type, role, level, techstack, amount, userid } = await request.json();
+    console.log('Request data:', { type, role, level, techstack, amount, userid });
 
     try {
+        console.log('Generating questions with AI...');
         const { text : questions } = await generateText({
             model: google('gemini-2.0-flash-001'),
             prompt: `Prepare questions for a job interview.
@@ -27,6 +30,7 @@ export async function POST(request: Request){
         Thank you! <3
     `,
         });
+        console.log('Generated questions:', questions);
 
         const interview = {
             role, type, level,
@@ -35,15 +39,30 @@ export async function POST(request: Request){
             userId: userid,
             finalized: true,
             coverImage: getRandomInterviewCover(),
-            createdAT: new Date().toISOString()
+            createdAt: new Date().toISOString()
         };
+        console.log('Prepared interview object:', interview);
 
-        await db.collection("interviews").add(interview);
+        console.log('Attempting to save to Firestore...');
+        const interviewRef = await db.collection("interviews").add(interview);
+        console.log('Successfully saved interview with ID:', interviewRef.id);
 
-        return Response.json({success: true}, {status:200});
+        return Response.json({
+            success: true,
+            interviewId: interviewRef.id
+        }, {status:200});
     }catch (error){
-        console.error(error);
+        console.error('Error generating interview:', error);
+        
+        let errorMessage = 'Failed to generate interview';
+        if (error instanceof Error) {
+            errorMessage = error.message;
+        }
 
-        return Response.json({ success: false, error}, { status: 500 });
+        return Response.json({ 
+            success: false, 
+            error: errorMessage,
+            details: error instanceof Error ? error.stack : undefined
+        }, { status: 500 });
     }
 }

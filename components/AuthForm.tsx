@@ -68,30 +68,41 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 router.push("/sign-in");
             } else {
                 const { email, password } = data;
+                console.log('Attempting to sign in with:', email);
 
                 const userCredential = await signInWithEmailAndPassword(
                     auth,
                     email,
                     password
                 );
+                console.log('Firebase authentication successful');
 
                 const idToken = await userCredential.user.getIdToken();
                 if (!idToken) {
+                    console.error('Failed to get ID token');
                     toast.error("Sign in Failed. Please try again.");
                     return;
                 }
+                console.log('ID token obtained successfully');
 
-                await signIn({
+                const signInResult = await signIn({
                     email,
                     idToken,
                 });
 
+                if (!signInResult.success) {
+                    console.error('Server-side sign in failed:', signInResult.message);
+                    toast.error(signInResult.message);
+                    return;
+                }
+
+                console.log('Sign in process completed successfully');
                 toast.success("Signed in successfully.");
                 router.push("/");
             }
-        } catch (error) {
-            console.log(error);
-            toast.error(`There was an error: ${error}`);
+        } catch (error: any) {
+            console.error('Authentication error:', error);
+            toast.error(error.message || "An error occurred during authentication");
         }
     };
 
