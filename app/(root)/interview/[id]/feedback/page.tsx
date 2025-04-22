@@ -1,5 +1,9 @@
 import React from 'react'
-import {getCurrentUser} from "../../../../../../../lib/actions/authaction";
+import Image from 'next/image'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import dayjs from 'dayjs'
+import {getCurrentUser} from "@/lib/actions/authaction";
 import {getFeedbackByInterviewId, getInterviewById} from "@/lib/actions/general.action";
 import {redirect} from "next/navigation";
 

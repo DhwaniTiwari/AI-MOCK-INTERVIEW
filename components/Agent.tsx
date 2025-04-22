@@ -5,7 +5,7 @@ import {cn} from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import {useEffect, useState} from "react";
 import { vapi } from "@/lib/vapi.sdk";
-import {interviewer} from "../../../constants";
+import {interviewer} from "@/constants";
 import {createFeedback} from "@/lib/actions/general.action";
 
 enum CallStatus {
