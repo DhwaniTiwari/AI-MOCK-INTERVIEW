@@ -87,14 +87,14 @@ const Agent = ({userName, userId, type, interviewId, questions }: AgentProps) =>
     const handleCall = async () => {
         setCallStatus(CallStatus.CONNECTING);
 
-        if (type === 'generate') {
+        if (type === 'generate' && userId) {
             await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
                 variableValues: {
                     username: userName,
                     userid: userId,
                 }
-            })
-        } else {
+            });
+        } else if (interviewId) {
             let formattedQuestions = '';
 
             if (questions){
@@ -107,7 +107,7 @@ const Agent = ({userName, userId, type, interviewId, questions }: AgentProps) =>
                 variableValues: {
                     questions: formattedQuestions
                 }
-            })
+            });
         }
     }
 

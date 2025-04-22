@@ -3,15 +3,22 @@ import { auth } from '@/firebase/admin';
 
 export async function POST(request: Request) {
     try {
-        const { session } = await request.json();
-        
-        if (!session) {
-            return NextResponse.json({ error: 'No session provided' }, { status: 400 });
+        const { idToken } = await request.json();
+
+        if (!idToken) {
+            return NextResponse.json(
+                { error: 'ID token is required' },
+                { status: 400 }
+            );
         }
 
-        await auth.verifySessionCookie(session, true);
-        return NextResponse.json({ valid: true });
-    } catch (error) {
-        return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+        const decodedToken = await auth.verifyIdToken(idToken);
+        return NextResponse.json({ uid: decodedToken.uid });
+    } catch (err) {
+        console.error('Error verifying token:', err);
+        return NextResponse.json(
+            { error: 'Invalid token' },
+            { status: 401 }
+        );
     }
 } 

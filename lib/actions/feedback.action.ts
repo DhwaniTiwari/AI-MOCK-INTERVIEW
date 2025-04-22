@@ -1,7 +1,6 @@
 'use server';
 
 import { db } from "@/firebase/admin";
-import { feedbackSchema } from "@/constants/index";
 import { CreateFeedbackParams, Feedback } from "@/types";
 
 export async function createFeedback(params: CreateFeedbackParams): Promise<Feedback> {
@@ -19,6 +18,6 @@ export async function createFeedback(params: CreateFeedbackParams): Promise<Feed
         interviewId,
         userId,
         messages,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
     };
 } 

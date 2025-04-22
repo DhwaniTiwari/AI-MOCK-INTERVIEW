@@ -6,16 +6,16 @@ export interface Feedback {
     role: 'user' | 'system' | 'assistant';
     content: string;
   }>;
-  totalScore: number;
-  categoryScores: Array<{
+  createdAt: string;
+  totalScore?: number;
+  categoryScores?: Array<{
     name: string;
     score: number;
     comment: string;
   }>;
-  strengths: string[];
-  areasForImprovement: string[];
-  finalAssessment: string;
-  createdAt: string;
+  strengths?: string[];
+  areasForImprovement?: string[];
+  finalAssessment?: string;
 }
 
 export interface Interview {
