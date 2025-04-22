@@ -1,6 +1,11 @@
 export interface Feedback {
   id: string;
   interviewId: string;
+  userId: string;
+  messages: Array<{
+    role: 'user' | 'system' | 'assistant';
+    content: string;
+  }>;
   totalScore: number;
   categoryScores: Array<{
     name: string;
@@ -28,8 +33,10 @@ export interface Interview {
 export interface CreateFeedbackParams {
   interviewId: string;
   userId: string;
-  transcript: { role: string; content: string }[];
-  feedbackId?: string;
+  messages: Array<{
+    role: 'user' | 'system' | 'assistant';
+    content: string;
+  }>;
 }
 
 export interface User {
